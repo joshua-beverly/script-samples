@@ -1,0 +1,15 @@
+## Rotate and clean up old log files to free up disk space 
+
+#!/bin/bash
+
+# path to...
+LOG_DIR="/var/log/appName"
+
+# length of time
+DAYS=30
+
+# zip
+find "$LOG_DIR" -type f -name "*.log" -mtime +$DAYS -exec gzip {} \;
+
+# remove
+find "$LOG_DIR" -type f -name "*.log.gz" -mtime +$DAYS -exec rm {} \;

@@ -1,0 +1,101 @@
+INPUT=$runDir/InteractionsReport.input
+
+SQLLOG1=$runDir/InteractionsReport.sqlLogOne$$
+rawRecordsFile=$runDir/InteractionsReport.rawDataRecords$$
+finalRecordsFile=$runDir/InteractionsReport.finalRecordsFile$$
+errorFile=$runDir/InteractionsReport.errorFile$$
+
+outputFile=$runDir/InteractionsReport.RPT
+
+rm -f $outputFile $errorFile* $rawRecordsFile* $finalRecordsFile* $SQLLOG1*
+
+RPT()
+{
+    print "$1" >> $outputFile
+}
+
+## other functions......... ##
+
+# Start of main script #
+# the INPUT is an account number
+
+echo " Start script $0 = Date: "`date +%m/%d/%y--%T`
+
+cnt=0
+wbsacct=0
+firmIDs=999
+deleted=999
+acttype=999
+fname=999
+lname=999
+startdate=999
+status=999
+priority=999
+desc=999
+crby=999
+crtime=999
+editby=999
+edittime=999
+useredittime=999
+note=999
+length=999
+actdel=999
+
+RPT "ACCT|FIRM IDS|DEELTE Y/N|TYPE|FIRSTNAME|LASTNAME|START DATE|STATUS|PRIORITY|DESCRIPTION|CREATED BY|SYSTEM CREATE TIME|EDITED BY|SYSTEM EDIT TIME|USER EDIT TIME |NOTE LENGTH|NOTE ID|NOTE"
+
+while read FileRecord
+do 
+    cnt=`expr $cnt +1`
+
+    echo "cnt=[$cnt]"
+    wbsacct=`echo "$FileRecord" | cut -d\| -f1`
+    echo "wbsacct=[$wbsacct]"
+
+    getID
+    retval=$?
+    if [ "$retval" -eq 1 ]
+    then
+        echo "retVal from getID=[$retVal]"
+        echo "Fatal ERROR from getID - Exiting Script"
+        echo "Reference $errorFile"
+        exit 1
+
+    elif [ "$retval" -eq 9 ]
+    then
+        RPT "$FileRecord|FIRM ID NOT FOUND"
+    
+    elif [ "$retval" -eq 0 ]
+    then
+        getNotes
+        retvalc=$?
+        if [ "$retvalc" -eq 1 ]
+        then
+            echo "retValc from getNotes=[$retValc]"
+            echo "Fatal ERROR from getNotes - Exiting Script"
+            echo "Reference $errorFile"
+            exit 1
+        fi
+
+    fi
+
+wbsacct=0
+deleted=999
+acttype=999
+fname=999
+lname=999
+startdate=999
+status=999
+priority=999
+desc=999
+crby=999
+crtime=999
+editby=999
+edittime=999
+useredittime=999
+note=999
+length=999
+actdel=999
+
+done < $INPUT
+
+exit 0

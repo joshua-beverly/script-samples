@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Threshold for disk space usage %
+THRESHOLD=75
+
+# Path to the directory you want to manage
+DIRECTORY="/dev/mapper/logs"
+
+# Number of days for file age threshold
+DAYS_OLD=30
+
+# Get current disk usage percentage
+DISK_USAGE=$(df -h --output=pcent "$DIRECTORY" | tail -n 1 | tr -d '[:space:]%' | tr -d '\n')
+
+if [ "$DISK_USAGE" -ge "$THRESHOLD" ]; then
+    # Find files older than N days and delete or archive them
+    find "$DIRECTORY" -type f -mtime +"$DAYS_OLD" -exec rm {} \;   # Delete files older than N days
+    # Alternatively, you can archive files instead of deleting them:
+    # find "$DIRECTORY" -type f -mtime +"$DAYS_OLD" -exec gzip {} \;  # Archive files older than N days using gzip
+fi

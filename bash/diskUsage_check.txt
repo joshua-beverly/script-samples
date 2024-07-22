@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Disk usage threshold percentage
+THRESHOLD=80
+
+# Email address to send alert
+EMAIL="email@gmail.com"
+
+# Function to check disk usage
+check_disk_usage() {
+    # df -H for disk usage, grep -vE '^Filesystem|tmpfs|cdrom' to filter these out, awk for usage % and name
+    df -H | grep -vE '^Filesystem|tmpfs|cdrom' | awk '{ print $5 " " $1 }' | while read output;
+    do
+        usage=$(echo $output | awk '{ print $1 }' | sed 's/%//g')
+        partition=$(echo $output | awk '{ print $2 }')
+    #check if usage % exceeds THRESHOLD %
+        if [ $usage -ge $THRESHOLD ]; then
+            echo "Warning: Disk usage on $partition is at ${usage}%." | mail -s "Disk Usage Alert: $partition" $EMAIL
+        fi
+    done
+}
+
+# Main script execution
+echo "Starting disk usage check..."
+check_disk_usage
+echo "Disk usage check completed."

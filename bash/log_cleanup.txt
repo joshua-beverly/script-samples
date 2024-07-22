@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Directory containing the log files
+LOG_DIR="/path/to/logs"
+
+# Number of days threshold
+DAYS=365
+
+# Find and delete log files older than N days
+find "$LOG_DIR" -type f -name "*.log" -mtime +$DAYS -exec rm -f {} \;
+
+# echo cleanup activity
+echo "$(date): Cleanup completed. Deleted log files older than $DAYS days in $LOG_DIR." >> /path/to/cleanup.log
+
+
+################### CRON JOB ###################
+## 0 1 * * * /home/user/scripts/log_cleanup.sh ## min 0, hr 1, every dd, every mm, every day of wk
+
+

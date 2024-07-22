@@ -1,0 +1,8 @@
+#!/bin/bash
+SERVICES=("nginx" "mysql" "redis")
+for SERVICE in "${SERVICES[@]}"; do
+  if ! systemctl is-active --quiet $SERVICE; then
+    systemctl restart $SERVICE
+    echo "$SERVICE was down and has been restarted on $(hostname)" | mail -s "$SERVICE Restarted" admin@example.com
+  fi
+done

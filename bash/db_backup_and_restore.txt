@@ -1,0 +1,8 @@
+## will automate backup and restore operations for db
+
+#!/bin/bash
+BACKUP_DIR="/backups/mysql"
+DB_NAME="mydatabase"
+TIMESTAMP=$(date +%F_%T)
+mysqldump -u root -p'yourpassword' $DB_NAME > "$BACKUP_DIR/${DB_NAME}_$TIMESTAMP.sql"
+find "$BACKUP_DIR" -type f -name "*.sql" -mtime +7 -exec rm {} \;

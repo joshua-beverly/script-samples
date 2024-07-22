@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# path to Tomcat
+TOMCAT_PATH="/opt/path/tomcat"
+START_SCRIPT="$TOMCAT_PATH/bin/startup.sh"
+STOP_SCRIPT="$TOMCAT_PATH/bin/shutdown.sh"
+
+# Function to check if Tomcat is running
+is_tomcat_running() {
+    ps aux | grep -v grep | grep -q "$TOMCAT_PATH"
+    return $?
+}
+
+# Function to stop Tomcat
+stop_tomcat() {
+    if is_tomcat_running; then
+        echo "Stopping Tomcat service..."
+        $STOP_SCRIPT
+        if [ $? -eq 0 ]; then
+            echo "Tomcat service stopped successfully."
+        else
+            echo "Failed to stop Tomcat service."
+            exit 1
+        fi
+    else
+        echo "Tomcat service is not running."
+    fi
+}
+
+# Function to start Tomcat
+start_tomcat() {
+    echo "Starting Tomcat service..."
+    $START_SCRIPT
+    if [ $? -eq 0 ]; then
+        echo "Tomcat service started successfully."
+    else
+        echo "Failed to start Tomcat service."
+        exit 1
+    fi
+}
+
+# Function to restart Tomcat
+restart_tomcat() {
+    stop_tomcat
+    echo "Waiting for 5 seconds before starting Tomcat..."
+    sleep 5
+    start_tomcat
+}
+
+# Main script execution
+echo "Restarting Tomcat service..."
+restart_tomcat
+echo "Tomcat service restart completed."
